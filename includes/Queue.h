@@ -34,9 +34,12 @@ public:
     const std::string& fileB = ""
   );
 
+  int contentions() const { return cCont; }
+
 private:
   std::deque<std::unique_ptr<Event>> queue;
   std::mutex mutex;
+  int cCont;
 };
 
 #endif

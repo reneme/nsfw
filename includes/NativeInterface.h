@@ -25,6 +25,8 @@ public:
   bool hasErrored();
   bool isWatching();
 
+  int contentions() { return mQueue->contentions(); }
+
 private:
   std::shared_ptr<EventQueue> mQueue;
   std::unique_ptr<NativeImplementation> mNativeInterface;

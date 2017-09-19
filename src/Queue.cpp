@@ -1,5 +1,6 @@
 #include "../includes/Queue.h"
 #include <iostream>
+#include <chrono>
 
 #pragma unmanaged
 
@@ -27,8 +28,16 @@ std::unique_ptr<Event> EventQueue::dequeue() {
 }
 
 std::unique_ptr<std::vector<Event*>> EventQueue::dequeueAll() {
-  std::lock_guard<std::mutex> lock(mutex);
+  if (!mutex.try_lock()) {
+    auto start = std::chrono::high_resolution_clock::now();
+    ++cCont;
+    mutex.lock();
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << std::endl;
+  }
+
   if (queue.empty()) {
+      mutex.unlock();
       return nullptr;
   }
 
@@ -40,6 +49,7 @@ std::unique_ptr<std::vector<Event*>> EventQueue::dequeueAll() {
       queue.pop_front();
   }
 
+  mutex.unlock();
   return events;
 }
 
